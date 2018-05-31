@@ -1,4 +1,4 @@
-# **Finding Lane Lines on the Road** 
+# **Finding Lane Lines on the Road**
 
 ## Writeup Template
 
@@ -29,30 +29,45 @@ The goals / steps of this project are the following:
 
 ### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I ....
 
 In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
 
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
+If you'd like to include images to show how the pipeline works, here is how to include an image:
+
+My Pipeline was made up of 6 steps.
+
+1) Converted image to HSV format and used the V Channel. I found this was better than grayscale at being about to pickout the lanes.
 
 ![alt text][image2]
+
+2) The image was then blurred
+
 ![alt text][image3]
+
+3) The image was then passed thru Canny for edge detection
 ![alt text][image4]
+
+4 After canny, we mask the image to only focus on the segment of road ahead of us. Removing the horizon and anything on the sides.
+
 ![alt text][image5]
+
+5) Then we extract the hough_lines and pass to draw_lines to draw the lines to hi-light the lanes. I modified the draw_lines() function to first seperate the lines into left and right arrays based on positive/negative slopes of the lines. I then use the Numpy.polynomial.polynomial.polyfit() function to fit all the line segments to a polynomial to draw the best line. I found that if I average in the line segments from the previous frame when using polyfit(), then I reduce jitter.
+
 ![alt text][image6]
+
+6) Finally we overlay the lane markings with the original image.
+
 ![alt text][image7]
 
 
 ### 2. Identify potential shortcomings with your current pipeline
 
+One potential shortcoming of my approach is that is relies on hardwiring the percentage of the image above the horizon to mask out, but the horizon is moving due to hills, and that causes extraneous lines to get included, which causes the lines to jitter.
 
-One potential shortcoming would be what would happen when ... 
-
-Another shortcoming could be ...
+Another shortcoming is that algorithm in draw_lines is assuming that the lanes lines are straight, and curved roads cause problems with this approach.
 
 
 ### 3. Suggest possible improvements to your pipeline
 
-A possible improvement would be to ...
-
-Another potential improvement could be to ...
+One improvement would be to implement an algorithm that took the hough lines and fitted it to a curve, which would better be able to deal with a curving road.
